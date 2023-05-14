@@ -1,9 +1,23 @@
-import test from "./test";
+import { Result } from "library";
+import display from "library/display";
+import expect from "library/expect";
 
-test("This test succeeds", (expect) => {
-  expect(0, 0);
-});
+// Framework's code; builds on library's code.
 
-test("This test fails", (expect) => {
-  expect(0, 1);
-});
+type Expect<T> = (expected: T, actual: T) => void;
+
+type Scenario<T> = (expect: Expect<T>) => void;
+
+const test = <T>(slug: string, scenario: Scenario<T>): void => {
+  let result: Result<T>;
+
+  const sideEffectExpect = (expected: T, actual: T): void => {
+    result = expect(expected, actual);
+  };
+
+  scenario(sideEffectExpect);
+
+  display(slug, result);
+};
+
+export default test;
